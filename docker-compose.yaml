@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+
+  server:
+    build: .
+    working_dir: backend
+    command: npm run server
+    ports:
+      - 4000:4000
+    depends_on:
+      - rabbitmq
+    environment:
+      QUEUE_1: PUSH
+      QUEUE_2: PULL
+
+  consumer:
+    build: .
+    working_dir: backend
+    command: npm run consumer
+    ports:
+      - 4000:4000
+    depends_on:
+      - server
+    environment:
+      QUEUE_1: PUSH
+      QUEUE_2: PULL
+
+  web1:
+    build: .
+    working_dir: frontend
+    command: npm run dev
+    ports:
+      - 4000:4000
+      - 8080:8080
+    depends_on:
+      - consumer
+
+  web2:
+    build: .
+    working_dir: frontend
+    command: npm run dev
+    ports:
+      - 4000:4000
+      - 8081:8081
+    depends_on:
+      - consumer
