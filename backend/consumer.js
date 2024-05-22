@@ -15,8 +15,8 @@ amqp.connect('amqp://localhost', (err0, connection) => {
     channel.consume(
       QUEUE_1,
       (message) => {
-        const data = JSON.parse(message.content.toString());
-        channel.sendToQueue(QUEUE_2, Buffer.from(JSON.stringify(data)));
+        const text = message.content.toString();
+        channel.sendToQueue(QUEUE_2, Buffer.from(text.toUpperCase()));
       },
       { noAck: true },
     );
